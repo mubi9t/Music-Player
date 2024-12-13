@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="music-player">
+        <h1>Music Player</h1>
+        <audio id="audio" controls></audio>
+        <div class="controls">
+            <button id="prev">⏮️</button>
+            <button id="play">▶️</button>
+            <button id="pause" style="display: none;">⏸️</button>
+            <button id="next">⏭️</button>
+        </div>
+        <div class="name">
+            <p id="current-song">Now Playing:<br> </p>
+        </div>
+    </div>
+    <script>
+        // DOM Elements
+        const audio = document.getElementById('audio');
+        const playButton = document.getElementById('play');
+        const pauseButton = document.getElementById('pause');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        const currentSongDisplay = document.getElementById('current-song');
+
+        // Song List
+        const songs = [
+            '1_AAJA_BAY_JA_KUJH_SUN_LASHOOQ(256k).mp3'];
+        let currentSongIndex = 0;
+
+        // Load and Update Song
+        function loadSong(index) {
+            if (index >= 0 && index < songs.length) {
+                audio.src = songs[index];
+                currentSongDisplay.textContent = `Now Playing: ${songs[index]}`;
+            } else {
+                console.error('Invalid song index');
+            }
+        }
+
+        // Sync Play/Pause Buttons
+        function syncPlayPause() {
+            playButton.style.display = audio.paused ? 'inline' : 'none';
+            pauseButton.style.display = audio.paused ? 'none' : 'inline';
+        }
+
+        // Event Listeners
+        playButton.addEventListener('click', () => {
+            audio.play();
+            syncPlayPause();
+        });
+
+        pauseButton.addEventListener('click', () => {
+            audio.pause();
+            syncPlayPause();
+        });
+
+        prevButton.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            audio.play();
+            syncPlayPause();
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            audio.play();
+            syncPlayPause();
+        });
+
+        // Play/Pause State Listener for Manual Controls
+        audio.addEventListener('play', syncPlayPause);
+        audio.addEventListener('pause', syncPlayPause);
+
+        // Error Handling for Audio Load Failure
+        audio.addEventListener('error', () => {
+            currentSongDisplay.textContent = 'Error: Unable to play this song.';
+            console.error('Failed to load the audio file:', songs[currentSongIndex]);
+        });
+
+        // Load Initial Song
+        loadSong(currentSongIndex);
+    </script>
+</body>
+
+</html>
